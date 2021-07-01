@@ -24,10 +24,7 @@ public class EngineImpl implements Engine {
 
     // Constructor
     public EngineImpl() {
-        this.balls = new Balls();
-        this.playerCard = new Card();
-        this.cpuCard = new Card();
-        this.gameOver = false;
+        this.newGame();
     }
 
 
@@ -88,19 +85,15 @@ public class EngineImpl implements Engine {
     public void markPlayerCard(int index) {
         assert !this.gameOver || index <= 25;
         this.markField(playerCard.getCard().get(index));
-        if (this.checkCard(playerCard)) {
-            this.isPlayerWinner = true;
-        }
+        this.isPlayerWinner = this.checkCard(playerCard);
     }
 
     @Override
     public void autoMarkCpuCard() {
         assert !this.gameOver;
-        cpuCard.getCard().stream()
-                .filter(field -> balls.getDrawnBalls().contains(field.getValue())).forEach(Field::setMark);
-        if (this.checkCard(cpuCard)) {
-            this.isPlayerWinner = false;
-        }
+        cpuCard.getCard().stream().filter(field ->
+                balls.getDrawnBalls().contains(field.getValue())).forEach(Field::setMark);
+        this.isPlayerWinner = (this.checkCard(cpuCard));
     }
 
 
@@ -113,9 +106,10 @@ public class EngineImpl implements Engine {
 
     // CHECK IF BINGO
     private boolean checkCard(Card card) {
-        List<Integer> tempMarkedList = card.getCard().stream().filter(Field::isMarked).map(Field::getIndex).toList();
+        List<Integer> tempList;
+        tempList = card.getCard().stream().filter(Field::isMarked).map(Field::getIndex).toList();
         for (List<Integer> list : getWinConditions()) {
-            if (tempMarkedList.containsAll(list)) {
+            if (tempList.containsAll(list)) {
                 this.gameOver = true;
                 list.forEach(index -> card.getCard().get(index).setWinningField());
             }

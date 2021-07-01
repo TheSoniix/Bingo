@@ -6,6 +6,7 @@ import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public abstract class BingoCard {
 
@@ -14,6 +15,7 @@ public abstract class BingoCard {
                               float scale) {
         float tempY, tempX;
         int index = 0;
+
 
         for (int i = 0; i < 5; i++) {
             tempX = (x - (((boxSize * 5) + (boxGap * 4)) / 2) + (i * (boxSize + boxGap))) * scale;
@@ -25,6 +27,7 @@ public abstract class BingoCard {
                 index++;
             }
         }
+
     }
 
     abstract protected void drawBingoField(PGraphics g, Engine engine, float x, float y, float boxSize, float textSize, int index);

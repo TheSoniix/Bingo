@@ -9,7 +9,6 @@ import Bingo.Representation.Model.Text;
 import Bingo.Representation.Utils.Hover;
 import processing.core.PApplet;
 
-import java.util.Scanner;
 import java.util.stream.IntStream;
 
 
@@ -60,12 +59,14 @@ public class Representation extends PApplet {
         midX = (float) 2560 / 2;
         midY = (float) 1440 / 2;
         noStroke();
+        textAlign(CENTER);
+
+
     }
 
     public void draw() {
         frameCounterBallAnimation++;
         background(147, 177, 173);
-
 
 
         // Überschrift
@@ -74,6 +75,10 @@ public class Representation extends PApplet {
 
         // ESC
         Text.draw(super.g, "[ESC] = Exit", 100, 40, 20, grey, scale);
+
+        // Überschrift Gegner Karte
+        Text.draw(super.g, "Opponent", midX + 850, midY - 300, 32, grey, scale);
+
 
         // Draw counter
         String drawCounter = "Draw counter: " + engine.getDrawnBalls().size();
@@ -86,11 +91,8 @@ public class Representation extends PApplet {
 
         // New GAme Button
         // parameter raus?
-        newGame(midX + 1080 * scale, 25 * scale, 120 * scale, 35 * scale, 20 * scale);
+        this.newGame();
 
-
-        // Überschrift Gegner Karte
-        Text.draw(super.g, "Opponent", midX + 850, midY - 300, 32, grey, scale);
 
 
         // Bingo Cards
@@ -114,25 +116,26 @@ public class Representation extends PApplet {
         engine.isGameOver();
     }
 
+
     void eineKugelzumZiehen() {
         String tempText;
         if (!animate) {
 
             if (Hover.circle(super.g, midX * scale, (midY - 400) * scale, 100 * scale)) {
-                drawGradient(midX * scale, (midY - 400) * scale, 150, false);
+                colorGradient(midX * scale, (midY - 400) * scale, 150, false);
             } else {
-                drawGradient(midX * scale, (midY - 400) * scale, 140, false);
+                colorGradient(midX * scale, (midY - 400) * scale, 140, false);
             }
 
             tempText = (engine.getDrawnBalls().size() == 0) ? "Start" : Integer.toString(currBall);
-            Ball.draw(super.g, midX, midY - 400, 100, grey, scale);
-            Text.draw(super.g, tempText, midX, midY - 400, 32, white, scale);
+            Ball.draw(super.g, midX, midY - 400, 100, white, scale);
+            Text.draw(super.g, tempText, midX, midY - 400, 32, grey, scale);
 
         } else {
             tempText = Integer.toString(currBall);
-            drawGradient(midX * scale, (midY - 400) * scale, 150, true);
-            Ball.draw(super.g, midX, midY - 400, 100, white, scale);
-            Text.draw(super.g, tempText, midX, midY - 400, 32, grey, scale);
+            colorGradient(midX * scale, (midY - 400) * scale, 150, true);
+            Ball.draw(super.g, midX, midY - 400, 100, grey, scale);
+            Text.draw(super.g, tempText, midX, midY - 400, 32, white, scale);
         }
     }
 
@@ -168,7 +171,7 @@ public class Representation extends PApplet {
         Text.draw(super.g, tempText, x, y, 15, grey, scale);
     }
 
-    void drawGradient(float x, float y, int radius, boolean isRed) {
+    void colorGradient(float x, float y, int radius, boolean isRed) {
         int tempRadius = (int) (radius * scale);
         int tempColorInt = isRed ? 147 : 177;
         for (int r = tempRadius; r > 0; --r) {
@@ -183,17 +186,19 @@ public class Representation extends PApplet {
     }
 
     // midX + 1080 * scale,  25 * scale, 120 * scale, 35 * scale, 20 * scale
-    private void newGame(float x, float y, float width, float height, float textSize) {
-        boolean hover = Hover.rect(super.g, x * scale, y, width * scale, height * scale);
+    private void newGame() {
+        float x = (midX + 1080) * scale;
+        float y = 25 * scale;
+        float width = 120 * scale;
+        float height = 35 * scale;
+        boolean hover = Hover.rect(super.g, x, y, width, height);
 
         // Rect
         fill(hover ? color(214, 238, 255) : grey);
-        rect(x, (float) 25, width, height, 10);
+        rect(x, y, width, height, 10 * scale);
 
         // Text
-        Text.draw(super.g, "New Game", x + (width / 2), y + (height / 2), 20 * scale,
-                hover ? grey : white, 1);
-
+        Text.draw(super.g, "New Game", x, y, 20 * scale, hover ? grey : white, 1);
     }
 
     public void mousePressed() {

@@ -3,15 +3,9 @@
  */
 package Bingo;
 
-import Bingo.Engine.Engine;
-import Bingo.Engine.EngineImpl;
 import Bingo.Representation.Representation;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
 
         Representation.run(args);
