@@ -93,7 +93,7 @@ public class EngineImpl implements Engine {
         assert !this.gameOver;
         cpuCard.getCard().stream().filter(field ->
                 balls.getDrawnBalls().contains(field.getValue())).forEach(Field::setMark);
-        this.isPlayerWinner = (this.checkCard(cpuCard));
+        this.isPlayerWinner = !this.checkCard(cpuCard);
     }
 
 
@@ -123,10 +123,12 @@ public class EngineImpl implements Engine {
         IntStream.range(0, 12).forEach(i -> winConditions.add(new ArrayList<>()));
 
         // SENKRECHT
-        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j -> winConditions.get(i).add(j + (i * 5))));
+        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j ->
+                winConditions.get(i).add(j + (i * 5))));
 
         // Waagerecht
-        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j -> winConditions.get(i + 5).add((j * 5) + i)));
+        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j ->
+                winConditions.get(i + 5).add((j * 5) + i)));
 
         winConditions.get(10).addAll(List.of(0, 6, 12, 18, 24));
 

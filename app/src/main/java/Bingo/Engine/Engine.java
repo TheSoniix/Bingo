@@ -1,7 +1,6 @@
 package Bingo.Engine;
 
 import Bingo.Engine.Model.Field;
-
 import java.util.List;
 
 public interface Engine {

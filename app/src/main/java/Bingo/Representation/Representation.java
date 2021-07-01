@@ -2,19 +2,20 @@ package Bingo.Representation;
 
 import Bingo.Engine.Engine;
 import Bingo.Engine.EngineImpl;
+import Bingo.Engine.Model.Field;
 import Bingo.Representation.Model.Ball;
-import Bingo.Representation.Model.OpponentCard;
-import Bingo.Representation.Model.PlayerCard;
+import Bingo.Representation.Model.BingoField;
 import Bingo.Representation.Model.Text;
-import Bingo.Representation.Utils.Hover;
 import processing.core.PApplet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 
 public class Representation extends PApplet {
 
-    public static void run(String[] args) {
+    public static void run() {
         PApplet.runSketch(new String[]{""}, new Representation());
     }
 
@@ -41,16 +42,10 @@ public class Representation extends PApplet {
     boolean drawn = false;
     float colCounter = 0;
 
-    // Reps of the classes
-    PlayerCard playerCard = new PlayerCard();
-    OpponentCard opponentCard = new OpponentCard();
-
 
     public void settings() {
         size(1280, 720);
         //   fullScreen();
-
-
     }
 
 
@@ -60,8 +55,6 @@ public class Representation extends PApplet {
         midY = (float) 1440 / 2;
         noStroke();
         textAlign(CENTER);
-
-
     }
 
     public void draw() {
@@ -91,15 +84,12 @@ public class Representation extends PApplet {
 
         // New GAme Button
         // parameter raus?
-        this.newGame();
-
+        this.newGame(midX + 1080, 25, 120, 35, 20);
 
 
         // Bingo Cards
-        playerCard.drawBingoCard(super.g, engine, midX, midY - 200, 150, 2,
-                36, scale);
-        opponentCard.drawBingoCard(super.g, engine, midX + 850, midY - 200, 100,
-                2, 28, scale);
+        this.playerCard();
+        this.opponentCard();
 
 
         if (!engine.isGameOver()) {
@@ -109,8 +99,10 @@ public class Representation extends PApplet {
 
         } else {
             // Überschrift für Sieger
-            String winner = engine.isPlayerWinner() ? "Game Over! You won!" : "Game Over! Opponent won!";
-            Text.draw(super.g, winner, midX, midY - 350, 50, white, scale);
+            Text.draw(super.g, "Game Over", midX, midY - 400, 50, white, scale);
+            String winner = engine.isPlayerWinner() ? "You won!" : "Opponent won!";
+            // y = 350
+            Text.draw(super.g, winner, midX, midY - 300, 40, white, scale);
         }
 
         engine.isGameOver();
@@ -121,7 +113,7 @@ public class Representation extends PApplet {
         String tempText;
         if (!animate) {
 
-            if (Hover.circle(super.g, midX * scale, (midY - 400) * scale, 100 * scale)) {
+            if (overCircle(midX * scale, (midY - 400) * scale, 100 * scale)) {
                 colorGradient(midX * scale, (midY - 400) * scale, 150, false);
             } else {
                 colorGradient(midX * scale, (midY - 400) * scale, 140, false);
@@ -186,40 +178,118 @@ public class Representation extends PApplet {
     }
 
     // midX + 1080 * scale,  25 * scale, 120 * scale, 35 * scale, 20 * scale
-    private void newGame() {
-        float x = (midX + 1080) * scale;
-        float y = 25 * scale;
-        float width = 120 * scale;
-        float height = 35 * scale;
-        boolean hover = Hover.rect(super.g, x, y, width, height);
+    private void newGame(float x, float y, float width, float height, float textSize) {
+        boolean hover = overRect(x, y, width, height, scale);
 
         // Rect
         fill(hover ? color(214, 238, 255) : grey);
-        rect(x, y, width, height, 10 * scale);
+        rect(x * scale, y * scale, width * scale, height * scale, 10 * scale);
 
         // Text
-        Text.draw(super.g, "New Game", x, y, 20 * scale, hover ? grey : white, 1);
+        float X = x + (width / 2);
+        float Y = y + (height / 2);
+        Text.draw(super.g, "New Game", X, Y, textSize, hover ? grey : white, scale);
     }
 
     public void mousePressed() {
         if (mousePressed && mouseButton == LEFT) {
-            if (Hover.circle(super.g, midX * scale, (midY - 400) * scale, 100 * scale)) {
+
+            // Ball
+            if (overCircle(midX * scale, (midY - 400) * scale, 100 * scale)) {
                 if (!animate) {
                     animate = true;
                     frameCounterBallAnimation = 0;
                     random = (drawn) ? random : round(random(1, 3));
-
                 }
             }
 
-            if (Hover.rect(super.g, width - 200 * scale, 25 * scale, 120 * scale,
-                    35 * scale)) {
+            // New Game
+            if (overRect(midX + 1080, 25, 120, 35, scale)) {
                 engine.newGame();
                 animate = false;
                 currBall = 0;
             }
+
+            // Player Field
+            this.fieldList(midX, midY - 200, 150).stream().filter(r ->
+                    overRect(r.getX(), r.getY(), r.getSize(), r.getSize(), scale)).findFirst()
+                    .ifPresent(r -> engine.markPlayerCard(r.getIndex()));
         }
     }
 
+
+    private void playerCard() {
+        this.fieldList(midX, midY - 200, 150).forEach(this::drawPlayerField);
+    }
+
+    private void opponentCard() {
+        this.fieldList(midX + 850, midY - 200, 100).forEach(this::drawOpponentField);
+    }
+
+    private List<BingoField> fieldList(float x, float y, float boxSize) {
+        float boxGap = 2;
+        List<BingoField> tempList = new ArrayList<>();
+
+        IntStream.range(0, 5).forEach(i -> {
+            float tempX = (x - (((boxSize * 5) + (boxGap * 4)) / 2) + (i * (boxSize + boxGap)));
+            IntStream.range(0, 5).forEach(j -> {
+                float tempY = (y + j * (boxSize + boxGap));
+                tempList.add(new BingoField(tempX, tempY, boxSize, j + (i * 5)));
+            });
+        });
+
+        return tempList;
+    }
+
+
+    private void drawPlayerField(BingoField tempR) {
+        float x = tempR.getX();
+        float y = tempR.getY();
+        float size = tempR.getSize();
+        int index = tempR.getIndex();
+
+        // Namen vergabe!!
+        Field currField = engine.getPlayerCard().get(index);
+        String tempText = Integer.toString(currField.getValue());
+        int rectColor = color(255, 252, 255);
+
+        if (overRect(x, y, size, size, scale) && !engine.isGameOver()) {
+            rectColor = color(255, 122, 75);
+        } else {
+            rectColor = currField.isMarked() ? color(185, 238, 255) : rectColor;
+            rectColor = currField.isWinner() ? color(4, 240, 106) : rectColor;
+        }
+
+        fill(rectColor);
+        rect(x * scale, y * scale, size * scale, size * scale);
+        Text.draw(super.g, tempText, x + size / 2, y + size / 2, 36, 0, scale);
+    }
+
+    private void drawOpponentField(BingoField tempR) {
+        float x = tempR.getX();
+        float y = tempR.getY();
+        float size = tempR.getSize();
+        int index = tempR.getIndex();
+
+        Field currField = engine.getCpuCard().get(index);
+        int rectColor = currField.isWinner() ? color(255, 31, 61) : color(38, 38, 38);
+        String text = currField.isMarked() ? Integer.toString(currField.getValue()) : "";
+
+        fill(rectColor);
+        rect(x * scale, y * scale, size * scale, size * scale);
+        Text.draw(super.g, text, x + size / 2, y + size / 2, 28, 250, scale);
+    }
+
+    private boolean overRect(float x, float y, float width, float height, float scale) {
+        return mouseX >= x * scale && mouseX <= (x + width) * scale &&
+                mouseY >= y * scale && mouseY <= (y + height) * scale;
+    }
+
+    // auch mit scale?
+    private boolean overCircle(float x, float y, float diameter) {
+        float disX = x - mouseX;
+        float disY = y - mouseY;
+        return sqrt(sq(disX) + sq(disY)) < diameter / 2;
+    }
 
 }

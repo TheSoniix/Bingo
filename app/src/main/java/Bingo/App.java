@@ -8,10 +8,10 @@ import Bingo.Representation.Representation;
 public class App {
     public static void main(String[] args) {
 
-        Representation.run(args);
+        Representation.run();
 
 
-       // Engine-Test
+        // Engine-Test
 /*
         Engine test = new EngineImpl();
 
@@ -45,8 +45,6 @@ public class App {
 
 
          */
-
-
 
 
     }
