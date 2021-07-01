@@ -1,29 +1,33 @@
 package Bingo.Representation.Model;
 
 import Bingo.Engine.Engine;
+import Bingo.Engine.Model.Field;
+import Bingo.Representation.Utils.Hover;
 import processing.core.PGraphics;
 
 public class PlayerCard extends BingoCard {
 
-    public PlayerCard() {}
+    @Override
+    protected void drawBingoField(PGraphics g, Engine engine, float x, float y, float boxSize, float textSize, int index) {
+        int rectColor = g.color(255, 252, 255);
+        Field currField = engine.getPlayerCard().get(index);
 
-    protected void drawBingoField(float tempX, float tempY, float boxSide, float textSize, Engine engine, int index, PGraphics g) {
-        int rectColor;
-
-        if (overRect(tempX, tempY, boxSide, boxSide, g)) {
-            rectColor = g.color(255, 113, 31);
-            if (g.parent.mousePressed && g.parent.mouseButton == g.parent.LEFT) { engine.markPlayerCard(index); }
+        if (Hover.rect(g, x, y, boxSize, boxSize) &&
+                !engine.isGameOver()) {
+            rectColor = g.color(255, 122, 75);
+            if (g.parent.mousePressed && g.parent.mouseButton == g.LEFT) {
+                engine.markPlayerCard(index);
+            }
         } else {
-            rectColor = (engine.isPlayerFieldMarked(index)) ? g.color(160, 221, 230) : g.color(255, 252, 255);
-            rectColor = (engine.isPlayerFieldWinner(index)) ? g.color(0, 204, 102) : rectColor;
+            rectColor = currField.isMarked() ? g.color(185, 238, 255) : rectColor;
+            rectColor = currField.isWinner() ? g.color(4, 240, 106) : rectColor;
         }
 
         g.fill(rectColor);
-        g.rect(tempX, tempY, boxSide, boxSide);
+        g.rect(x, y, boxSize, boxSize);
 
-        g.fill(0);
-        g.textSize(textSize);
-        g.text(Integer.toString(engine.getPlayerCard().get(index)), tempX + (boxSide / 2),
-                tempY + (float) (g.textAscent() * 0.8 / 2) + (boxSide / 2));
+        float midBox = boxSize / 2;
+        Text.draw(g, Integer.toString(currField.getValue()), x + midBox, y + midBox, textSize, 0, 1);
     }
+
 }

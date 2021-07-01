@@ -5,7 +5,12 @@ import Bingo.Engine.EngineImpl;
 import Bingo.Representation.Model.Ball;
 import Bingo.Representation.Model.OpponentCard;
 import Bingo.Representation.Model.PlayerCard;
+import Bingo.Representation.Model.Text;
+import Bingo.Representation.Utils.Hover;
 import processing.core.PApplet;
+
+import java.util.Scanner;
+import java.util.stream.IntStream;
 
 
 public class Representation extends PApplet {
@@ -17,159 +22,199 @@ public class Representation extends PApplet {
     // Engine of the Game
     Engine engine = new EngineImpl();
 
-    // Reps of the classes
-    PlayerCard playerCard = new PlayerCard();
-    OpponentCard opponentCard = new OpponentCard();
-    Ball ball = new Ball();
-
 
     // Colors
-    int black = 0;
     int grey = color(47, 47, 47);
-    int green = color(79, 157, 69);
-    int blue = color(214, 238, 255);
     int white = color(255, 252, 255);
 
     //  Size
-    float midX, midY, scale;
+    float midX, midY;
+    float scale;
 
     // Ball
     int currBall;
+    int random;
 
-    // Counters
-    int counter = 0;
-    boolean first = false;
+    // Counters for autoMark()
+    int frameCounterBallAnimation = 0;
+    int framesCounterCpuMark = 0;
+    boolean animate = false;
+    boolean drawn = false;
+    float colCounter = 0;
+
+    // Reps of the classes
+    PlayerCard playerCard = new PlayerCard();
+    OpponentCard opponentCard = new OpponentCard();
 
 
     public void settings() {
-        // size(1280, 720);
-        fullScreen();
+        size(1280, 720);
+        //   fullScreen();
 
-        //  Size
-        midX = (float) displayWidth / 2;
-        midY = (float) displayHeight / 2;
-        scale = (float) ((displayWidth + displayHeight) / (2560 + 1440));
+
     }
 
 
     public void setup() {
+        scale = (width + height) / (float) (2560 + 1440);
+        midX = (float) 2560 / 2;
+        midY = (float) 1440 / 2;
+        noStroke();
     }
 
     public void draw() {
-        counter++;
-        background(grey);
+        frameCounterBallAnimation++;
+        background(147, 177, 173);
 
-        textAlign(CENTER);
+
 
         // Überschrift
-        fill(white);
-        textSize(200 * scale);
-        text("BINGO", midX, 100 * scale + (float) (textAscent() * 0.8 / 2));
+        Text.draw(super.g, "BINGO", midX, 100, 200, white, scale);
+
 
         // ESC
-        fill(white);
-        textSize(20 * scale);
-        text("[ESC] = Exit", 100, 25 * scale + (35 * scale / 2) + (float) (textAscent() * 0.8 / 2));
+        Text.draw(super.g, "[ESC] = Exit", 100, 40, 20, grey, scale);
 
         // Draw counter
-        fill(white);
-        textSize(20 * scale);
-        text("Draw counter: " + engine.getDrawnBalls().size(),
-                90 * scale, displayHeight - (100 * scale) + (float) (textAscent() * 0.8 / 2) );
+        String drawCounter = "Draw counter: " + engine.getDrawnBalls().size();
+        Text.draw(super.g, drawCounter, midX - 900, midY - 300, 28, grey, scale);
 
 
-
-        for (int i = 0; i < engine.getDrawnBalls().size(); i++) {
-            this.ball.drawBall(super.g, (20 + 30 * i) * scale, displayHeight - 60 * scale, 15 * scale,
-                    25 * scale, black, white, engine.getDrawnBalls().get(i));
-        }
+        // Gezogenen Bälle
+        IntStream.range(0, engine.getDrawnBalls().size()).forEach(this::gezogeneBaelle);
 
 
         // New GAme Button
-        newGame(displayWidth - 200 * scale, 25 * scale, 120 * scale, 35 * scale, 20 * scale);
-
-
-        // Aktuelle Kugel
-        drawBall(midX, midY - 400 * scale, 100 * scale, 32 * scale);
-
-
+        // parameter raus?
+        newGame(midX + 1080 * scale, 25 * scale, 120 * scale, 35 * scale, 20 * scale);
 
 
         // Überschrift Gegner Karte
-        textSize(32 * scale);
-        text("Opponent", midX + 800 * scale, midY - 300 * scale);
+        Text.draw(super.g, "Opponent", midX + 850, midY - 300, 32, grey, scale);
 
 
         // Bingo Cards
-        playerCard.drawBingoCard(super.g, midX, midY - 200 * scale, 150 * scale, 2, 36 * scale, engine);
-        opponentCard.drawBingoCard(super.g, midX + 800 * scale, midY - 200 * scale, 100 * scale, 2, 28 * scale, engine);
+        playerCard.drawBingoCard(super.g, engine, midX, midY - 200, 150, 2,
+                36, scale);
+        opponentCard.drawBingoCard(super.g, engine, midX + 850, midY - 200, 100,
+                2, 28, scale);
 
 
-        // Automatische Markierung CPU
-        if (first) {
-            if (counter == 60) {
-                engine.autoMarkCpuCard();
-                counter = 0;
-            }
+        if (!engine.isGameOver()) {
+
+            this.eineKugelzumZiehen();
+            this.kugelAnimation();
+
+        } else {
+            // Überschrift für Sieger
+            String winner = engine.isPlayerWinner() ? "Game Over! You won!" : "Game Over! Opponent won!";
+            Text.draw(super.g, winner, midX, midY - 350, 50, white, scale);
         }
-
 
         engine.isGameOver();
     }
 
+    void eineKugelzumZiehen() {
+        String tempText;
+        if (!animate) {
 
+            if (Hover.circle(super.g, midX * scale, (midY - 400) * scale, 100 * scale)) {
+                drawGradient(midX * scale, (midY - 400) * scale, 150, false);
+            } else {
+                drawGradient(midX * scale, (midY - 400) * scale, 140, false);
+            }
 
-    private void newGame(float x, float y, float width, float height, float textSize) {
-        boolean hover = overRect(x, y, width, height);
+            tempText = (engine.getDrawnBalls().size() == 0) ? "Start" : Integer.toString(currBall);
+            Ball.draw(super.g, midX, midY - 400, 100, grey, scale);
+            Text.draw(super.g, tempText, midX, midY - 400, 32, white, scale);
 
-        // Rect
-        fill(hover ? blue : 0);
-        noStroke();
-        rect(x, y, width, height, 10);
-
-        // Text
-        fill(hover ? 0 : white);
-        textSize(textSize);
-        text("New Game", x + (width / 2), y + (height / 2) + (float) (textAscent() * 0.8 / 2));
-
+        } else {
+            tempText = Integer.toString(currBall);
+            drawGradient(midX * scale, (midY - 400) * scale, 150, true);
+            Ball.draw(super.g, midX, midY - 400, 100, white, scale);
+            Text.draw(super.g, tempText, midX, midY - 400, 32, grey, scale);
+        }
     }
 
+    void kugelAnimation() {
+        // Kugel Animation
+        if (animate && frameCounterBallAnimation % 3 == 0) {
+            int tempIdx = (int) random(0, engine.getNotDrawnBalls().size() - 1);
+            currBall = engine.getNotDrawnBalls().get(tempIdx);
+            if (frameCounterBallAnimation == 60) {
+                currBall = engine.drawBall();
+                animate = false;
+                drawn = true;
+            }
+        }
 
-    private void drawBall(float x, float y, float ballSize, float textSize) {
-        ball.drawBall(super.g, x, y, textSize, ballSize, white, overCircle(x, y, ballSize) ? green : black, currBall);
+        if (drawn) {
+            // Cpu Funktion zum markieren wird aufgerufen
+            framesCounterCpuMark++;
+            if (framesCounterCpuMark == 60 * random) {
+                engine.autoMarkCpuCard();
+                framesCounterCpuMark = 0;
+                drawn = false;
+            }
+        }
+    }
+
+    void gezogeneBaelle(int index) {
+        colCounter = (index % 15 == 0) ? (float) index / 15 : colCounter;
+        float x = ((midX - 1125) + 30 * (index % 15));
+        float y = midY - 200 + 40 * colCounter;
+        String tempText = Integer.toString(engine.getDrawnBalls().get(index));
+        Ball.draw(super.g, x, y, 25, white, scale);
+        Text.draw(super.g, tempText, x, y, 15, grey, scale);
+    }
+
+    void drawGradient(float x, float y, int radius, boolean isRed) {
+        int tempRadius = (int) (radius * scale);
+        int tempColorInt = isRed ? 147 : 177;
+        for (int r = tempRadius; r > 0; --r) {
+            if (isRed) {
+                fill(tempColorInt, 177, 173);
+            } else {
+                fill(147, tempColorInt, 173);
+            }
+            ellipse(x, y, r, r);
+            tempColorInt = (tempColorInt + 1);
+        }
+    }
+
+    // midX + 1080 * scale,  25 * scale, 120 * scale, 35 * scale, 20 * scale
+    private void newGame(float x, float y, float width, float height, float textSize) {
+        boolean hover = Hover.rect(super.g, x * scale, y, width * scale, height * scale);
+
+        // Rect
+        fill(hover ? color(214, 238, 255) : grey);
+        rect(x, (float) 25, width, height, 10);
+
+        // Text
+        Text.draw(super.g, "New Game", x + (width / 2), y + (height / 2), 20 * scale,
+                hover ? grey : white, 1);
+
     }
 
     public void mousePressed() {
         if (mousePressed && mouseButton == LEFT) {
-            if (overCircle(midX, midY - 400 * scale, 100 * scale)) {
-                currBall = engine.drawBall();
-                counter = 0;
-                first = true;
+            if (Hover.circle(super.g, midX * scale, (midY - 400) * scale, 100 * scale)) {
+                if (!animate) {
+                    animate = true;
+                    frameCounterBallAnimation = 0;
+                    random = (drawn) ? random : round(random(1, 3));
+
+                }
             }
 
-            if (overRect(2350 * scale, 10 * scale, 120 * scale, 35 * scale)) {
+            if (Hover.rect(super.g, width - 200 * scale, 25 * scale, 120 * scale,
+                    35 * scale)) {
                 engine.newGame();
+                animate = false;
                 currBall = 0;
             }
         }
     }
 
-    public void keyPressed() {
-        if (keyPressed && keyCode == 32) {
-            currBall = engine.drawBall();
-            counter = 0;
-            first = true;
-        }
-    }
-
-    private boolean overRect(float x, float y, float width, float height) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
-    }
-
-    private boolean overCircle(float x, float y, float diameter) {
-        float disX = x - mouseX;
-        float disY = y - mouseY;
-        return sqrt(sq(disX) + sq(disY)) < diameter / 2;
-    }
 
 }

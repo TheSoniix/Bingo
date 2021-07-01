@@ -33,5 +33,7 @@ public class Field {
         this.winningField = true;
     }
 
-    public boolean isWinner() {return winningField;}
+    public boolean isWinner() {
+        return winningField;
+    }
 }

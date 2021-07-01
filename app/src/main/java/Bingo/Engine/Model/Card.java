@@ -1,6 +1,5 @@
 package Bingo.Engine.Model;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,14 +8,10 @@ import java.util.stream.IntStream;
 
 public class Card {
     private final List<Field> card;
-    private boolean bingo;
-    // Liste mit index oder value von der Sieger Linie
-    // ist bingo ist noch total unnötig
 
     // CONSTRUCOR
     public Card() {
         this.card = this.fillCardList();
-        this.bingo = false;
     }
 
     // GETTERS
@@ -24,9 +19,6 @@ public class Card {
         return card;
     }
 
-    public boolean isBingo() {
-        return bingo;
-    }
 
     // BUILD STRING OF THE CARD
     @Override
@@ -42,10 +34,8 @@ public class Card {
                 arrayRow.get(i).add(format);
             }
         }
-        return  String.format("%5s", arrayRow.get(0)) + "\n" +
-                String.format("%5s", arrayRow.get(1)) + "\n" +
-                String.format("%5s", arrayRow.get(2)) + "\n" +
-                String.format("%5s", arrayRow.get(3)) + "\n" +
+        return String.format("%5s", arrayRow.get(0)) + "\n" + String.format("%5s", arrayRow.get(1)) + "\n" +
+                String.format("%5s", arrayRow.get(2)) + "\n" + String.format("%5s", arrayRow.get(3)) + "\n" +
                 String.format("%5s", arrayRow.get(4)) + "\n";
     }
 
@@ -69,7 +59,7 @@ public class Card {
 
     private int splitInColumns(int index) {
         List<Integer> columns = new ArrayList<>();
-        IntStream.iterate(0, n -> n + 1).limit(5).forEach(i -> IntStream.range(0,5).forEach(j -> columns.add(15 * (i + 1))));
+        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j -> columns.add(15 * (i + 1))));
         return this.randomNumber(columns.get(index) - 14, columns.get(index));
     }
 

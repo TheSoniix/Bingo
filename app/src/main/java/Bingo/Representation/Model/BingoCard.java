@@ -1,31 +1,32 @@
 package Bingo.Representation.Model;
+
 import Bingo.Engine.Engine;
 import processing.core.PGraphics;
+import processing.event.MouseEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BingoCard {
 
-    public BingoCard() {}
 
-    public void drawBingoCard(PGraphics g, float x, float y, float boxSide, float boxGap, float textSize, Engine engine) {
+    public void drawBingoCard(PGraphics g, Engine engine, float x, float y, float boxSize, float boxGap, float textSize,
+                              float scale) {
         float tempY, tempX;
         int index = 0;
 
         for (int i = 0; i < 5; i++) {
-            tempX = x - (((boxSide  * 5) + (boxGap * 4)) / 2) + (i * (boxSide + boxGap)) ;
+            tempX = (x - (((boxSize * 5) + (boxGap * 4)) / 2) + (i * (boxSize + boxGap))) * scale;
 
             for (int j = 0; j < 5; j++) {
-                tempY = y + j * (boxSide + boxGap);
+                tempY = (y + j * (boxSize + boxGap)) * scale;
 
-                drawBingoField(tempX, tempY, boxSide, textSize, engine, index, g);
-
+                drawBingoField(g, engine, tempX, tempY, boxSize * scale, textSize * scale, index);
                 index++;
             }
         }
     }
 
-    abstract protected void drawBingoField(float tempX, float tempY, float boxSide, float textSize, Engine engine, int index, PGraphics g);
+    abstract protected void drawBingoField(PGraphics g, Engine engine, float x, float y, float boxSize, float textSize, int index);
 
-    protected boolean overRect(float x, float y, float width, float height, PGraphics g) {
-        return g.parent.mouseX >= x && g.parent.mouseX <= x + width && g.parent.mouseY >= y && g.parent.mouseY <= y + height;
-    }
 }

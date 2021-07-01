@@ -1,5 +1,7 @@
 package Bingo.Engine;
 
+import Bingo.Engine.Model.Field;
+
 import java.util.List;
 
 public interface Engine {
@@ -8,17 +10,9 @@ public interface Engine {
 
     void newGame();
 
-    List<Integer> getPlayerCard();
+    List<Field> getPlayerCard();
 
-    List<Integer> getCpuCard();
-
-    boolean isPlayerFieldMarked(int index);
-
-    boolean isPlayerFieldWinner(int index);
-
-    boolean isCpuFieldMarked(int index);
-
-    boolean isCpuFieldWinner(int index);
+    List<Field> getCpuCard();
 
     void markPlayerCard(int index);
 
@@ -30,6 +24,9 @@ public interface Engine {
 
     List<Integer> getDrawnBalls();
 
+    List<Integer> getNotDrawnBalls();
+
+    boolean isPlayerWinner();
 
 
 }

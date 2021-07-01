@@ -16,22 +16,21 @@ public class Balls {
     }
 
     public List<Integer> getDrawnBalls() {
-        return List.copyOf(drawnBalls);
+        return drawnBalls;
+    }
+
+    public Set<Integer> getBalls() {
+        return balls;
     }
 
     public int drawBall() {
-        boolean alreadyDrawn = true;
-        int randomNum = -1;
+        int randomNum;
+        do {
+            randomNum = (int) Math.floor(Math.random() * 75 + 1);
+        } while (!this.balls.contains(randomNum));
 
-        if (this.balls.size() != 0) {
-            while (alreadyDrawn) {
-                randomNum = (int) Math.floor(Math.random() * (75 - 1 + 1) + 1);
-                alreadyDrawn = !this.balls.contains(randomNum);
-            }
-
-            this.balls.remove(randomNum);
-            this.drawnBalls.add(randomNum);
-        }
+        this.balls.remove(randomNum);
+        this.drawnBalls.add(randomNum);
         return randomNum;
     }
 }
