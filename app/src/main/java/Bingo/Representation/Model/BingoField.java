@@ -1,9 +1,7 @@
 package Bingo.Representation.Model;
 
 public class BingoField {
-    private final float x;
-    private final float y;
-    private final float size;
+    private final float x, y, size;
     private final int index;
 
     public BingoField(float x, float y, float size, int index) {

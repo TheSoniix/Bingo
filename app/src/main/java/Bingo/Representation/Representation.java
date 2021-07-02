@@ -63,19 +63,23 @@ public class Representation extends PApplet {
 
 
         // Überschrift
-        Text.draw(super.g, "BINGO", midX, 100, 200, white, scale);
+        new Text("BINGO", midX, 100, 200, white, scale).draw(super.g);
+        //Text.draw(super.g, "BINGO", midX, 100, 200, white, scale);
 
 
         // ESC
-        Text.draw(super.g, "[ESC] = Exit", 100, 40, 20, grey, scale);
+        new Text("[ESC] = Exit", 100, 40, 20, grey, scale).draw(super.g);
+        //Text.draw(super.g, "[ESC] = Exit", 100, 40, 20, grey, scale);
 
         // Überschrift Gegner Karte
-        Text.draw(super.g, "Opponent", midX + 850, midY - 300, 32, grey, scale);
+        new Text("Opponent", midX + 850, midY - 300, 32, grey, scale).draw(super.g);
+        //Text.draw(super.g, "Opponent", midX + 850, midY - 300, 32, grey, scale);
 
 
         // Draw counter
         String drawCounter = "Draw counter: " + engine.getDrawnBalls().size();
-        Text.draw(super.g, drawCounter, midX - 900, midY - 300, 28, grey, scale);
+        new Text(drawCounter, midX - 900, midY - 300, 28, grey, scale).draw(super.g);
+       // Text.draw(super.g, drawCounter, midX - 900, midY - 300, 28, grey, scale);
 
 
         // Gezogenen Bälle
@@ -99,10 +103,12 @@ public class Representation extends PApplet {
 
         } else {
             // Überschrift für Sieger
-            Text.draw(super.g, "Game Over", midX, midY - 400, 50, white, scale);
+            new Text("Game Over", midX, midY - 400, 50, white, scale).draw(super.g);
+            // Text.draw(super.g, "Game Over", midX, midY - 400, 50, white, scale);
             String winner = engine.isPlayerWinner() ? "You won!" : "Opponent won!";
             // y = 350
-            Text.draw(super.g, winner, midX, midY - 300, 40, white, scale);
+            new Text(winner, midX, midY - 300, 40, white, scale).draw(super.g);
+            //Text.draw(super.g, winner, midX, midY - 300, 40, white, scale);
         }
 
         engine.isGameOver();
@@ -120,14 +126,14 @@ public class Representation extends PApplet {
             }
 
             tempText = (engine.getDrawnBalls().size() == 0) ? "Start" : Integer.toString(currBall);
-            Ball.draw(super.g, midX, midY - 400, 100, white, scale);
-            Text.draw(super.g, tempText, midX, midY - 400, 32, grey, scale);
+            new Ball( midX, midY - 400, 100, white, scale).draw(super.g);
+            new Text(tempText, midX, midY - 400, 32, grey, scale).draw(super.g);
 
         } else {
             tempText = Integer.toString(currBall);
             colorGradient(midX * scale, (midY - 400) * scale, 150, true);
-            Ball.draw(super.g, midX, midY - 400, 100, grey, scale);
-            Text.draw(super.g, tempText, midX, midY - 400, 32, white, scale);
+            new Ball(midX, midY - 400, 100, grey, scale).draw(super.g);
+            new Text(tempText, midX, midY - 400, 32, white, scale).draw(super.g);
         }
     }
 
@@ -159,8 +165,8 @@ public class Representation extends PApplet {
         float x = ((midX - 1125) + 30 * (index % 15));
         float y = midY - 200 + 40 * colCounter;
         String tempText = Integer.toString(engine.getDrawnBalls().get(index));
-        Ball.draw(super.g, x, y, 25, white, scale);
-        Text.draw(super.g, tempText, x, y, 15, grey, scale);
+        new Ball(x, y, 25, white, scale).draw(super.g);
+        new Text(tempText, x, y, 15, grey, scale).draw(super.g);
     }
 
     void colorGradient(float x, float y, int radius, boolean isRed) {
@@ -188,7 +194,8 @@ public class Representation extends PApplet {
         // Text
         float X = x + (width / 2);
         float Y = y + (height / 2);
-        Text.draw(super.g, "New Game", X, Y, textSize, hover ? grey : white, scale);
+        new Text("New Game", X, Y, textSize, hover ? grey : white, scale).draw(super.g);
+     //   Text.draw(super.g, "New Game", X, Y, textSize, hover ? grey : white, scale);
     }
 
     public void mousePressed() {
@@ -219,11 +226,16 @@ public class Representation extends PApplet {
 
 
     private void playerCard() {
-        this.fieldList(midX, midY - 200, 150).forEach(this::drawPlayerField);
+        this.fieldList(midX, midY - 200, 150).forEach(field -> {
+            this.drawPlayerField(field.getX(), field.getY(), field.getSize(), field.getIndex());
+        });
     }
 
     private void opponentCard() {
-        this.fieldList(midX + 850, midY - 200, 100).forEach(this::drawOpponentField);
+        this.fieldList(midX + 850, midY - 200, 100).forEach(field -> {
+            this.drawOpponentField(field.getX(), field.getY(), field.getSize(), field.getIndex());
+                }
+        );
     }
 
     private List<BingoField> fieldList(float x, float y, float boxSize) {
@@ -242,11 +254,7 @@ public class Representation extends PApplet {
     }
 
 
-    private void drawPlayerField(BingoField tempR) {
-        float x = tempR.getX();
-        float y = tempR.getY();
-        float size = tempR.getSize();
-        int index = tempR.getIndex();
+    private void drawPlayerField(float x, float y, float size, int index) {
 
         // Namen vergabe!!
         Field currField = engine.getPlayerCard().get(index);
@@ -262,14 +270,11 @@ public class Representation extends PApplet {
 
         fill(rectColor);
         rect(x * scale, y * scale, size * scale, size * scale);
-        Text.draw(super.g, tempText, x + size / 2, y + size / 2, 36, 0, scale);
+        new Text(tempText, x + size / 2, y + size / 2, 36, 0, scale).draw(super.g);
+        //Text.draw(super.g, tempText, x + size / 2, y + size / 2, 36, 0, scale);
     }
 
-    private void drawOpponentField(BingoField tempR) {
-        float x = tempR.getX();
-        float y = tempR.getY();
-        float size = tempR.getSize();
-        int index = tempR.getIndex();
+    private void drawOpponentField(float x, float y, float size, int index) {
 
         Field currField = engine.getCpuCard().get(index);
         int rectColor = currField.isWinner() ? color(255, 31, 61) : color(38, 38, 38);
@@ -277,7 +282,8 @@ public class Representation extends PApplet {
 
         fill(rectColor);
         rect(x * scale, y * scale, size * scale, size * scale);
-        Text.draw(super.g, text, x + size / 2, y + size / 2, 28, 250, scale);
+        new Text(text, x + size / 2, y + size / 2, 28, 250, scale).draw(super.g);
+      //  Text.draw(super.g, text, x + size / 2, y + size / 2, 28, 250, scale);
     }
 
     private boolean overRect(float x, float y, float width, float height, float scale) {
