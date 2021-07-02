@@ -9,21 +9,21 @@ public interface Engine {
 
     void newGame();
 
-    List<Field> getPlayerCard();
+    List<Field> playerCard();
 
-    List<Field> getCpuCard();
+    List<Field> opponentCard();
 
-    void markPlayerCard(int index);
+    void markFieldPlayer(int index);
 
-    void autoMarkCpuCard();
+    void markFieldOpponent(int index);
 
-    int drawBall();
+    int pullBall();
 
     boolean isGameOver();
 
-    List<Integer> getDrawnBalls();
+    List<Integer> pulledBalls();
 
-    List<Integer> getNotDrawnBalls();
+    List<Integer> notPulledBalls();
 
     boolean isPlayerWinner();
 

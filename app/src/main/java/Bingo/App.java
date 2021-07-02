@@ -3,49 +3,16 @@
  */
 package Bingo;
 
+import Bingo.Engine.Engine;
+import Bingo.Engine.EngineImpl;
 import Bingo.Representation.Representation;
+
+import java.util.stream.IntStream;
 
 public class App {
     public static void main(String[] args) {
 
-        Representation.run();
-
-
-        // Engine-Test
-/*
-        Engine test = new EngineImpl();
-
-        for (int i = 0; i < 75; i++) {
-            test.drawBall();
-        }
-
-
-        for (int i = 0; i < 25; i++) {
-            test.markPlayerCard(i);
-        }
-
-        for (int i = 0; i < 25; i++) {
-            System.out.println(test.isPlayerFieldWinner(i));
-        }
-
-
-
-        while (!test.isGameOver()) {
-            test.drawBall();
-
-            for (int i = 0; i < 25; i++) {
-                test.markPlayerCard(i);
-            }
-
-                test.autoMarkCpuCard();
-
-
-            System.out.println(test);
-        }
-
-
-         */
-
+         Representation.run();
 
     }
 }

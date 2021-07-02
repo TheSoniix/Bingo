@@ -4,10 +4,11 @@ import processing.core.PGraphics;
 
 public class Text {
     private final String text;
-    private final float x, y, scale, size;
-    private final int color;
+    private final int x, y, size, color;
+    private final float  scale;
 
-    public Text(String text, float x, float y, float size, int color, float scale) {
+
+    public Text(String text, int x, int y, int size, int color, float scale) {
         this.text = text;
         this.x = x;
         this.y = y;
