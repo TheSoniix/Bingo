@@ -4,6 +4,7 @@ import Bingo.Engine.Model.Balls;
 import Bingo.Engine.Model.Card;
 import Bingo.Engine.Model.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class EngineImpl implements Engine {
@@ -46,12 +47,14 @@ public class EngineImpl implements Engine {
 
     @Override
     public List<Field> playerCard() {
-        return List.copyOf(playerCard.getCard());
+        return playerCard.getCard().stream().map(field ->
+                new Field(field.getValue(), field.getIndex(), field.isMarked())).collect(Collectors.toList());
     }
 
     @Override
     public List<Field> opponentCard() {
-        return List.copyOf(opponentCard.getCard());
+        return opponentCard.getCard().stream().map(field ->
+                new Field(field.getValue(), field.getIndex(), field.isMarked())).collect(Collectors.toList());
     }
 
     @Override

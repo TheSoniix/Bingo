@@ -55,11 +55,6 @@ public class Card {
         return tempList;
     }
 
-    private int splitInCols(int index) {
-        List<Integer> columns = new ArrayList<>();
-        IntStream.range(0, 5).forEach(i -> IntStream.range(0, 5).forEach(j -> columns.add(15 * (i + 1))));
-        return this.randomNumber(columns.get(index) - 14, columns.get(index));
-    }
 
     private int randomNumber(int min, int max) {
         return (int) Math.floor(Math.random() * (max - min + 1) + min);

@@ -3,31 +3,20 @@
  */
 package Bingo;
 
-import Bingo.Engine.Engine;
 import Bingo.Engine.EngineImpl;
 import Bingo.Engine.Model.Field;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
 public class AppTest {
 
-    Engine engineUnderTest = new EngineImpl();
     EngineImpl engine = new EngineImpl();
 
-    @Test
-    public void engineNotNull() {
-        assertNotNull("Engine should be exist!", this.engineUnderTest);
-    }
-
-    @Test
-    public void engineImplNotNull() {
-        assertNotNull("EngineImpl should be exist!", this.engine);
-    }
-
-    // Nicht so nice
+    // BEVOR GAME STARTS
     @Test
     public void playerCardNotNull() {
         assertNotNull("Player Card should be exist", engine.playerCard());
@@ -46,9 +35,34 @@ public class AppTest {
     }
 
     @Test
+    public void notPulledBalls() {
+        assertEquals("Not drawn balls should be 75", engine.notPulledBalls().size(), 75);
+    }
+
+    @Test
+    public void pulledBalls() {
+        assertNotNull("Drawn balls should not be null", engine.pulledBalls());
+    }
+
+    @Test
+    public void pulledBallsZero() {
+        assertEquals("Drawn balls should be zero", 0, engine.pulledBalls().size());
+    }
+
+    @Test
     public void checkPlayerCardValues() {
-        List<Field> tempList = engine.playerCard();
         String msg = "Valuse of player Card are wrong!";
+        this.checkValues(engine.playerCard(), msg);
+    }
+
+
+    @Test
+    public void checkOpponentCardValues() {
+        String msg = "Values of opponent Card are wrong!";
+        this.checkValues(engine.opponentCard(), msg);
+    }
+
+    public void checkValues(List<Field> tempList, String msg) {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 int currValue = tempList.get((i * 5) + j).getValue();
@@ -57,17 +71,6 @@ public class AppTest {
         }
     }
 
-    @Test
-    public void checkOpponentCardValues() {
-        List<Field> tempList = engine.opponentCard();
-        String msg = "Values of opponent Card are wrong!";
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                int currValue = tempList.get((i * 5) + j).getValue();
-                assertTrue(msg, currValue > (i * 15) && currValue <= (i * 15) + 15);
-            }
-        }
-    }
 
     @Test
     public void checkBallsValues() {
@@ -76,21 +79,32 @@ public class AppTest {
     }
 
     @Test
-    public void pulledBallsisEmpty() {
-        assertEquals("Pulled balls are not empty!", 0, engine.pulledBalls().size());
+    public void valueOfBallsCanNotBeEqual() {
+        int currValue;
+        int checkValue;
+        for (int i = 0; i < engine.notPulledBalls().size(); i++) {
+            checkValue = engine.notPulledBalls().get(i);
+            for (int j = 0; j < engine.notPulledBalls().size(); j++) {
+                currValue = engine.notPulledBalls().get(j);
+                if (i != j) {
+                    assertNotEquals(checkValue, currValue);
+                }
+            }
+        }
     }
 
-    @Test
-    public void notPulledBallsisFull() {
-        assertEquals("Not pulled balls should be full!", 75, engine.notPulledBalls().size());
-    }
 
     @Test
-    public void pullBall() {
+    public void pullBallInPulledBalls() {
         engine.pullBall();
         String msg = "Pulled ball is not added in list of pulled balls!";
         assertEquals(msg, 1, engine.pulledBalls().size());
-        msg = "Pulled balls is not removed from not pulled List!";
+    }
+
+    @Test
+    public void pullBallRemoveNotPulledBalls() {
+        engine.pullBall();
+        String msg = "Pulled balls is not removed from not pulled List!";
         assertEquals(msg, 74, engine.notPulledBalls().size());
     }
 
@@ -99,28 +113,32 @@ public class AppTest {
         int currBall = engine.pullBall();
         int inPulledBalls = engine.pulledBalls().get(0);
         assertEquals(currBall, inPulledBalls);
+    }
+
+    @Test
+    public void checkValueOfRemovePulledBall() {
+        int currBall = engine.pullBall();
         assertFalse(engine.notPulledBalls().contains(currBall));
+
     }
 
     @Test
     public void playerFieldsAreUnmarked() {
-        engine.playerCard().forEach( field ->
+        engine.playerCard().forEach(field ->
                 assertFalse("Fields in players card should not be marked!", field.isMarked())
         );
     }
 
     @Test
     public void opponentFieldsAreUnmarked() {
-        engine.opponentCard().forEach( field ->
-                assertFalse("Fields in opponent card should not be marked!",field.isMarked())
+        engine.opponentCard().forEach(field ->
+                assertFalse("Fields in opponent card should not be marked!", field.isMarked())
         );
     }
 
     @Test
     public void checkMarkFieldPlayer() {
-        for (int i = 0; i < 75; i++) {
-            engine.pullBall();
-        }
+        this.pullAllBalls();
         engine.markFieldPlayer(1);
         String msg = "It is not possible to mark a field in players card!";
         assertTrue(msg, engine.playerCard().get(1).isMarked());
@@ -128,9 +146,7 @@ public class AppTest {
 
     @Test
     public void checkMarkFieldOpponent() {
-        for (int i = 0; i < 75; i++) {
-            engine.pullBall();
-        }
+        this.pullAllBalls();
         engine.markFieldOpponent(1);
         String msg = "It is not possible to mark a field in opponent card!";
         assertTrue(msg, engine.opponentCard().get(1).isMarked());
@@ -158,5 +174,119 @@ public class AppTest {
             works = false;
         }
         assertFalse(works);
+    }
+
+
+    @Test
+    public void gameOverBeforeGameStart() {
+        assertFalse(engine.isGameOver());
+    }
+
+    @Test
+    public void gameOverAfterWinPlayer() {
+        this.pullAllBalls();
+        engine.playerCard().stream().limit(5).map(Field::getIndex).forEach(index -> engine.markFieldPlayer(index));
+        assertTrue(engine.isGameOver());
+    }
+
+    @Test
+    public void gameOverAfterWinOpponent() {
+        this.pullAllBalls();
+        engine.opponentCard().stream().limit(5).map(Field::getIndex).forEach(index -> engine.markFieldOpponent(index));
+        assertTrue(engine.isGameOver());
+    }
+
+
+    @Test
+    public void testNewGame() {
+        IntStream.range(0, 75).forEach((i) -> engine.pullBall());
+        List<Integer> oldBallList = engine.pulledBalls();
+        engine.newGame();
+        List<Integer> newBallList = engine.pulledBalls();
+        assertNotEquals(oldBallList, newBallList);
+    }
+
+    @Test
+    public void testNewGamePlayerCard() {
+        List<Field> oldPlayerList = engine.playerCard();
+        engine.newGame();
+        List<Field> newPlayerList = engine.playerCard();
+        assertNotEquals(oldPlayerList, newPlayerList);
+    }
+
+    @Test
+    public void testNewGameOpponentCard() {
+        List<Field> oldOpponentList = engine.opponentCard();
+        engine.newGame();
+        List<Field> newOpponentList = engine.opponentCard();
+        assertNotEquals(oldOpponentList, newOpponentList);
+    }
+
+    @Test
+    public void winConditionsHorizontal() {
+        for (int i = 0; i < 5; i++) {
+            this.pullAllBalls();
+            for (int j = 0; j < 5; j++) {
+                engine.markFieldPlayer((j * 5) + i);
+            }
+            assertTrue(engine.isGameOver());
+            engine.newGame();
+        }
+    }
+
+    @Test
+    public void winConditionsVertical() {
+        for (int i = 0; i < 5; i++) {
+            this.pullAllBalls();
+            for (int j = 0; j < 5; j++) {
+                engine.markFieldPlayer(j + (i * 5));
+            }
+            assertTrue(engine.isGameOver());
+            engine.newGame();
+        }
+    }
+
+    @Test
+    public void winConditionsDiagonal() {
+        List<Integer> diaOne = List.of(0, 6, 12, 18, 24);
+        List<Integer> diaTwo = List.of(4, 8, 12, 16, 20);
+
+        this.pullAllBalls();
+        diaOne.forEach(i -> engine.markFieldPlayer(i));
+        assertTrue(engine.isGameOver());
+        engine.newGame();
+        this.pullAllBalls();
+        diaTwo.forEach(i -> engine.markFieldPlayer(i));
+        assertTrue(engine.isGameOver());
+
+    }
+
+    private void pullAllBalls() {
+        for (int i = 0; i < 75; i++) {
+            engine.pullBall();
+        }
+    }
+
+    @Test
+    public void manipulateGame() {
+        engine.newGame();
+        List<Field> list = engine.playerCard();
+        this.pullAllBalls();
+        list.forEach(Field::setMark);
+        engine.markFieldPlayer(2);
+        assertFalse(engine.isGameOver());
+    }
+
+    @Test
+    public void notPossibleToDrawMoreThen75Balls() {
+        boolean test = true;
+        this.pullAllBalls();
+        try {
+            engine.pullBall();
+        } catch (AssertionError error) {
+            System.out.println(error.getMessage());
+            test = false;
+        }
+        assertFalse(test);
     }
 }

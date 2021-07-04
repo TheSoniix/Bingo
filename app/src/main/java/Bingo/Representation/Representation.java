@@ -43,8 +43,8 @@ public class Representation extends PApplet {
     List<HashMap<String, Integer>> oFieldInfo = new ArrayList<>();
 
     public void settings() {
-        size(1280, 720);
-      //  fullScreen();
+      //  size(1280, 720);
+        fullScreen();
     }
 
     public void setup() {

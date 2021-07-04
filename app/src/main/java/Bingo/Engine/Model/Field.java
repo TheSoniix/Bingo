@@ -36,4 +36,5 @@ public class Field {
     public boolean isWinner() {
         return winningField;
     }
+
 }
