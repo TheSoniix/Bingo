@@ -1,4 +1,4 @@
-package Bingo.Engine.Model;
+package Bingo.Engine.Models;
 
 public class Field {
     private final int value;

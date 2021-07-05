@@ -1,37 +1,34 @@
 package Bingo.Engine;
 
-import Bingo.Engine.Model.Balls;
-import Bingo.Engine.Model.Card;
-import Bingo.Engine.Model.Field;
+import Bingo.Engine.Models.Balls;
+import Bingo.Engine.Models.Card;
+import Bingo.Engine.Models.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class EngineImpl implements Engine {
-
+public class BingoImpl implements Bingo {
     private Balls balls;
-
-    private Card playerCard;
-    private Card opponentCard;
-
-    boolean isPlayerWinner;
+    private Card pOneCard;
+    private Card pTwoCard;
+    boolean isPOneWinner;
     boolean gameOver;
 
-    public EngineImpl() {
+    public BingoImpl() {
         this.newGame();
     }
 
     @Override
     public String toString() {
-        return "Your Bingo: \n" + playerCard.toString() + "\n" +
-               "Cpu Bingo: \n" + opponentCard.toString();
+        return "Player one bingo: \n" + pOneCard.toString() + "\n" +
+                "Player two bingo: \n" + pTwoCard.toString();
     }
 
     @Override
     public void newGame() {
         this.balls = new Balls();
-        this.playerCard = new Card();
-        this.opponentCard = new Card();
+        this.pOneCard = new Card();
+        this.pTwoCard = new Card();
         this.gameOver = false;
     }
 
@@ -41,19 +38,19 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public boolean isPlayerWinner() {
-        return this.isPlayerWinner;
+    public boolean isPOneWinner() {
+        return this.isPOneWinner;
     }
 
     @Override
-    public List<Field> playerCard() {
-        return playerCard.getCard().stream().map(field ->
+    public List<Field> pOneCard() {
+        return pOneCard.getCard().stream().map(field ->
                 new Field(field.getValue(), field.getIndex(), field.isMarked())).collect(Collectors.toList());
     }
 
     @Override
-    public List<Field> opponentCard() {
-        return opponentCard.getCard().stream().map(field ->
+    public List<Field> pTwoCard() {
+        return pTwoCard.getCard().stream().map(field ->
                 new Field(field.getValue(), field.getIndex(), field.isMarked())).collect(Collectors.toList());
     }
 
@@ -73,19 +70,18 @@ public class EngineImpl implements Engine {
         return List.copyOf(this.balls.getBalls());
     }
 
-
     @Override
-    public void markFieldPlayer(int index) {
+    public void pOneMarkField(int index) {
         assert !this.gameOver && index >= 0 && index <= 25 : "Game over or wrong index!";
-        this.markField(playerCard, index);
-        this.isPlayerWinner = this.checkCard(playerCard);
+        this.markField(pOneCard, index);
+        this.isPOneWinner = this.checkCard(pOneCard);
     }
 
     @Override
-    public void markFieldOpponent(int index) {
+    public void pTwoMarkField(int index) {
         assert !this.gameOver && index >= 0 && index <= 25 : "Game over or wrong index!";
-        this.markField(opponentCard, index);
-        this.isPlayerWinner = !this.checkCard(opponentCard);
+        this.markField(pTwoCard, index);
+        this.isPOneWinner = !this.checkCard(pTwoCard);
     }
 
     private void markField(Card card, int index) {
@@ -123,7 +119,6 @@ public class EngineImpl implements Engine {
 
         return winConditions;
     }
-
 }
 
 

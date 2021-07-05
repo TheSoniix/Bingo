@@ -1,4 +1,4 @@
-package Bingo.Engine.Model;
+package Bingo.Engine.Models;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package Bingo.Engine.Model;
+package Bingo.Engine.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +31,10 @@ public class Card {
             }
         }
         return String.format("%5s", arrayRow.get(0)) + "\n" +
-               String.format("%5s", arrayRow.get(1)) + "\n" +
-               String.format("%5s", arrayRow.get(2)) + "\n" +
-               String.format("%5s", arrayRow.get(3)) + "\n" +
-               String.format("%5s", arrayRow.get(4)) + "\n";
+                String.format("%5s", arrayRow.get(1)) + "\n" +
+                String.format("%5s", arrayRow.get(2)) + "\n" +
+                String.format("%5s", arrayRow.get(3)) + "\n" +
+                String.format("%5s", arrayRow.get(4)) + "\n";
     }
 
     private List<Field> fillCard() {
@@ -55,9 +55,7 @@ public class Card {
         return tempList;
     }
 
-
     private int randomNumber(int min, int max) {
         return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
-
 }

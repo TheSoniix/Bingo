@@ -1,9 +1,9 @@
 package Bingo.Representation;
 
-import Bingo.Engine.Engine;
-import Bingo.Engine.EngineImpl;
-import Bingo.Engine.Model.Field;
-import Bingo.Representation.Model.Text;
+import Bingo.Engine.Bingo;
+import Bingo.Engine.BingoImpl;
+import Bingo.Engine.Models.Field;
+import Bingo.Representation.Models.Text;
 import processing.core.PApplet;
 
 import java.util.*;
@@ -17,7 +17,7 @@ public class Representation extends PApplet {
     }
 
     // Engine of the Game
-    Engine engine = new EngineImpl();
+    Bingo engine = new BingoImpl();
 
     // Colors
     int grey = color(47, 47, 47);
@@ -43,7 +43,7 @@ public class Representation extends PApplet {
     List<HashMap<String, Integer>> oFieldInfo = new ArrayList<>();
 
     public void settings() {
-      //  size(1280, 720);
+        //  size(1280, 720);
         fullScreen();
     }
 
@@ -98,14 +98,14 @@ public class Representation extends PApplet {
             }
         } else {
             new Text("Game Over", midX, midY - 400, 50, white, scale).draw(super.g);
-            String winner = engine.isPlayerWinner() ? "You won!" : "Opponent won!";
+            String winner = engine.isPOneWinner() ? "You won!" : "Opponent won!";
             new Text(winner, midX, midY - 300, 40, white, scale).draw(super.g);
         }
         animationCounter++;
     }
 
     void drawNotAnimatedBall() {
-        if (overCircle(midX, midY - 400, 100)) {
+        if (overCircle(midX, midY - 400)) {
             colorGradient(midX * scale, (midY - 400) * scale, 150 * scale, false);
         } else {
             colorGradient(midX * scale, (midY - 400) * scale, 140 * scale, false);
@@ -117,7 +117,6 @@ public class Representation extends PApplet {
 
     }
 
-
     void drawAnimatedBall() {
         String tempText = Integer.toString(currBall);
         colorGradient(midX * scale, (midY - 400) * scale, 150 * scale, true);
@@ -128,9 +127,11 @@ public class Representation extends PApplet {
 
     void autoMarkingOpponent() {
         if (markCounter == 60 * (counterMulitplier + 0.5)) {
-            engine.opponentCard().forEach(field -> {
-                if (!engine.isGameOver()) {engine.markFieldOpponent(field.getIndex());}
-                });
+            engine.pTwoCard().forEach(field -> {
+                if (!engine.isGameOver()) {
+                    engine.pTwoMarkField(field.getIndex());
+                }
+            });
             markCounter = 0;
             pulled = false;
         }
@@ -173,7 +174,6 @@ public class Representation extends PApplet {
         }
     }
 
-    // midX + 1080 * scale,  25 * scale, 120 * scale, 35 * scale, 20 * scale
     private void newGame() {
         boolean hover = overRect(2360, 25, 120, 35);
         // Rect
@@ -188,7 +188,7 @@ public class Representation extends PApplet {
     public void mousePressed() {
         if (mousePressed && mouseButton == LEFT) {
             // Ball
-            if (overCircle(midX, midY - 400, 100)) {
+            if (overCircle(midX, midY - 400)) {
                 if (!animate) {
                     animate = true;
                     animationCounter = 0;
@@ -204,7 +204,7 @@ public class Representation extends PApplet {
             // Bingo Field
             pFieldInfo.stream().filter(field ->
                     overRect(field.get("X"), field.get("Y"), field.get("size"), field.get("size")))
-                    .findFirst().ifPresent(field -> engine.markFieldPlayer(field.get("index")));
+                    .findFirst().ifPresent(field -> engine.pOneMarkField(field.get("index")));
         }
     }
 
@@ -232,7 +232,7 @@ public class Representation extends PApplet {
     }
 
     private void pDrawField(int x, int y, int size, int index) {
-        Field currField = engine.playerCard().get(index);
+        Field currField = engine.pOneCard().get(index);
         String tempText = Integer.toString(currField.getValue());
         int rectColor = color(255, 252, 255);
 
@@ -249,7 +249,7 @@ public class Representation extends PApplet {
     }
 
     private void oDrawField(int x, int y, int size, int index) {
-        Field currField = engine.opponentCard().get(index);
+        Field currField = engine.pTwoCard().get(index);
         int rectColor = currField.isWinner() ? color(255, 31, 61) : color(38, 38, 38);
         String text = currField.isMarked() ? Integer.toString(currField.getValue()) : "";
 
@@ -263,10 +263,9 @@ public class Representation extends PApplet {
                 mouseY >= y * scale && mouseY <= (y + height) * scale;
     }
 
-    private boolean overCircle(float x, float y, float diameter) {
+    private boolean overCircle(float x, float y) {
         float disX = (x * scale) - mouseX;
         float disY = (y * scale) - mouseY;
-        return sqrt(sq(disX) + sq(disY)) < (diameter * scale) / 2;
+        return sqrt(sq(disX) + sq(disY)) < ((float) 100 * scale) / 2;
     }
-
 }
