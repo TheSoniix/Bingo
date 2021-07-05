@@ -15,30 +15,35 @@ public class AppTest {
 
     BingoImpl engine = new BingoImpl();
 
+    // Testen, ob "isGameOver" vor Spielstart richtig funktioniert
     @Test
     public void testGameOverBeforeGameStart() {
         String msg = "The game is already over before the game starts!";
         assertFalse(msg, engine.isGameOver());
     }
 
+    // Testen, ob die nicht gezogenen Bälle vor Spielstart voll sind
     @Test
     public void testNotDrawnBalls() {
         String msg = "The size of this list should be 75!";
         assertEquals(msg, engine.notDrawnBalls().size(), 75);
     }
 
+    // Testen, ob die gezogenen Bälle vor Spielstart leer sind
     @Test
     public void testDrawnBalls() {
         String msg = "The size of this list should be 0!";
         assertEquals(msg, 0, engine.drawnBalls().size());
     }
 
+    // Prüfen, ob die einzelnen Inhalte der Felder des ersten Spielers korrekt sind
     @Test
     public void checkPlayerOneCardValues() {
         String msg = "Values are wrong!";
         this.checkValues(engine.pOneCard(), msg);
     }
 
+    // Prüfen, ob die einzelnen Inhalte der Felder des zweiten Spielers korrekt sind
     @Test
     public void checkPlayerTwoCardValues() {
         String msg = "Values are wrong!";
@@ -54,6 +59,7 @@ public class AppTest {
         }
     }
 
+    // Testen, ob die kugeln die richtigen Werte haben
     @Test
     public void checkBallsValue() {
         String msg = "Value of some balls are out of range!";
@@ -72,6 +78,7 @@ public class AppTest {
         }
     }
 
+    // Testen, ob der Liste der gezogenen Bälle ein Ball hinzugefügt wird, wenn man eine Kugel zieht
     @Test
     public void addBallInDrawnBalls() {
         engine.drawBall();
@@ -79,6 +86,7 @@ public class AppTest {
         assertEquals(msg, 1, engine.drawnBalls().size());
     }
 
+    // Testen, ob der Liste der noch nicht gezogenen Bälle ein Ball entfernt wird, wenn man eine Kugel zieht
     @Test
     public void removeBallFromDrawnBalls() {
         engine.drawBall();
@@ -86,6 +94,7 @@ public class AppTest {
         assertEquals(msg, 74, engine.notDrawnBalls().size());
     }
 
+    // Testen, ob die richtige Zahl in die gezogenen Bälle abgelegt wird
     @Test
     public void checkValueOfDrawnBall() {
         String msg = "The number of the current drawn ball was not pushed correctly into the list of drawn balls!";
@@ -94,6 +103,7 @@ public class AppTest {
         assertEquals(msg, currBall, inDrawnBalls);
     }
 
+    // Testen, ob die richtige Zahl aus der Liste der noch nicht gezogenen Bälle entfern wird
     @Test
     public void checkValueOfNotDrawnBall() {
         String msg = "The number of the drawn ball still exist in the list of not drawn balls!";
@@ -101,6 +111,7 @@ public class AppTest {
         assertFalse(msg, engine.notDrawnBalls().contains(currBall));
     }
 
+    // Testen, ob es möglich ist, mehr als 75 Bälle zu ziehen
     @Test
     public void drawMoreBallsThenExist() {
         String msg = "It is possible to draw more then 75 balls!";
@@ -115,18 +126,21 @@ public class AppTest {
         assertFalse(msg, test);
     }
 
+    // Testen, ob alle Felder des ersten Spielers vor Spielstart nicht markiert sind
     @Test
     public void playerOneFieldsAreUnmarked() {
         String msg = "Fields should not be marked!";
         engine.pOneCard().forEach(field -> assertFalse(msg, field.isMarked()));
     }
 
+    // Testen, ob alle Felder des zweiten Spielers vor Spielstart nicht markiert sind
     @Test
     public void playerTwoFieldsAreUnmarked() {
         String msg = "Fields should not be marked!";
         engine.pTwoCard().forEach(field -> assertFalse(msg, field.isMarked()));
     }
 
+    // Testen, ob die Funktion zum markieren eines Feldes für den ersten Spieler funktioniert
     @Test
     public void checkMarkFieldPlayerOne() {
         this.drawAllBalls();
@@ -135,6 +149,7 @@ public class AppTest {
         assertTrue(msg, engine.pOneCard().get(1).isMarked());
     }
 
+    // Testen, ob die Funktion zum markieren eines Feldes für den zweiten Spieler funktioniert
     @Test
     public void checkMarkFieldPlayerTwo() {
         this.drawAllBalls();
@@ -143,6 +158,7 @@ public class AppTest {
         assertTrue(msg, engine.pTwoCard().get(1).isMarked());
     }
 
+    // Testen, ob man bei der Methode zum markieren eines Feldes für den ersten Spieler einen nicht erlaubten Parameter-Wert benutzen kann
     @Test
     public void checkMarkFieldWithWrongIndexPlayerOne() {
         boolean works;
@@ -156,6 +172,7 @@ public class AppTest {
         assertFalse(msg, works);
     }
 
+    // Testen, ob man bei der Methode zum markieren eines Feldes für den zweiten Spieler einen nicht erlaubten Parameter-Wert benutzen kann
     @Test
     public void checkMarkFieldWithWrongIndexPlayerTwo() {
         String msg = "To mark a field with a wrong index was accepted!";
@@ -169,6 +186,7 @@ public class AppTest {
         assertFalse(msg, works);
     }
 
+    // Testen, ob die Engine den Sieg des ersten Spielers erkennt
     @Test
     public void gameOverAfterWinPlayerOne() {
         this.drawAllBalls();
@@ -177,6 +195,7 @@ public class AppTest {
         assertTrue(msg, engine.isGameOver());
     }
 
+    // Testen, ob die Engine den Sieg des zweiten Spielers erkennt
     @Test
     public void gameOverAfterWinPlayerTwo() {
         this.drawAllBalls();
@@ -185,6 +204,7 @@ public class AppTest {
         assertTrue(msg, engine.isGameOver());
     }
 
+    // Testen, ob nach "newGame()" die Liste der gezogenen Bälle zurückgesetzt wird
     @Test
     public void testNewGameDrawnBalls() {
         String msg = "Balls did no reset!";
@@ -195,6 +215,7 @@ public class AppTest {
         assertNotEquals(msg, oldBallList, newBallList);
     }
 
+    // Testen, ob nach "newGame()" der erste Spieler eine neue Karte erhält
     @Test
     public void testNewGamePlayerOneCard() {
         String msg = "Card did no reset!";
@@ -204,6 +225,7 @@ public class AppTest {
         assertNotEquals(msg, oldPlayerList, newPlayerList);
     }
 
+    // Testen, ob nach "newGame()" der zweite Spieler eine neue Karte erhält
     @Test
     public void testNewGamePlayerTwoCard() {
         String msg = "Card did no reset!";
@@ -213,6 +235,7 @@ public class AppTest {
         assertNotEquals(msg, oldPlayerTwoList, newPlayerTwoList);
     }
 
+    // Testen, ob man mit einer horizontalen Reihe gewinnen kann
     @Test
     public void winConditionsHorizontal() {
         String msg = "Horizontal winning conditions do not work!";
@@ -226,6 +249,7 @@ public class AppTest {
         }
     }
 
+    // Testen, ob man mit einer vertikalen Reihe gewinnen kann
     @Test
     public void winConditionsVertical() {
         String msg = "Vertical winning conditions do not work!";
@@ -239,6 +263,7 @@ public class AppTest {
         }
     }
 
+    // Testen, ob man mit einer Diagonalen Reihe gewinnen kann
     @Test
     public void winConditionsDiagonal() {
         String msg = "Diagonal winning conditions do not work!";
@@ -255,6 +280,7 @@ public class AppTest {
 
     }
 
+    // Testen, ob man die Wert der Felder einer Bingo-Karte in der Engine ändern kann
     @Test
     public void manipulateCard() {
         String msg = "Card in engine is mutable!";
