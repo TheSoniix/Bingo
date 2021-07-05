@@ -9,7 +9,7 @@ Mein Programm ist die Umsetzung der klassischen 75-Kugel Variante von Bingo. Dab
 Der Spieler und der Computer erhalten jeweils eine Bingo-Karte.
 Außerdem zieht der Spieler die Kugeln selbst, um die Spiel-Geschwindigkeit bestimmen zu können.
 Auch die Felder markiert der Spieler selbst.
-Der Computer markiert seine Felder, nach dem eine Kugel gezogen wurde, automatisch.
+Der Computer markiert seine Felder, nachdem eine Kugel gezogen wurde, automatisch.
 Dabei wird der Aufruf der Funktion verzögert, um das Spielgeschehen etwas realistischer zu gestalten.
 Es gewinnt derjenige, der zuerst fünf Felder vertikal, horizontal oder diagonal in einer Reihe markiert hat. (91)
 
