@@ -1,4 +1,4 @@
-package Bingo.Representation.Models;
+package Bingo.GUI.Models;
 
 import processing.core.PGraphics;
 

@@ -8,29 +8,29 @@ import java.util.stream.IntStream;
 
 public class Balls {
     private final Set<Integer> balls;
-    private final List<Integer> pulledBalls;
+    private final List<Integer> drawnBalls;
 
     public Balls() {
         this.balls = IntStream.range(1, 76).boxed().collect(Collectors.toSet());
-        this.pulledBalls = new ArrayList<>();
+        this.drawnBalls = new ArrayList<>();
     }
 
-    public List<Integer> getPulledBalls() {
-        return pulledBalls;
+    public List<Integer> getDrawnBalls() {
+        return drawnBalls;
     }
 
     public Set<Integer> getBalls() {
         return balls;
     }
 
-    public int pullBall() {
+    public int drawBall() {
         int randomNum;
         do {
             randomNum = (int) Math.floor(Math.random() * 75 + 1);
         } while (!this.balls.contains(randomNum));
 
         this.balls.remove(randomNum);
-        this.pulledBalls.add(randomNum);
+        this.drawnBalls.add(randomNum);
         return randomNum;
     }
 }

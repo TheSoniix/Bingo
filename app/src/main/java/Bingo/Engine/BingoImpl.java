@@ -55,18 +55,18 @@ public class BingoImpl implements Bingo {
     }
 
     @Override
-    public int pullBall() {
+    public int drawBall() {
         assert !this.gameOver && balls.getBalls().size() > 0 : "Game over or balls are empty";
-        return this.balls.pullBall();
+        return this.balls.drawBall();
     }
 
     @Override
-    public List<Integer> pulledBalls() {
-        return List.copyOf(this.balls.getPulledBalls());
+    public List<Integer> drawnBalls() {
+        return List.copyOf(this.balls.getDrawnBalls());
     }
 
     @Override
-    public List<Integer> notPulledBalls() {
+    public List<Integer> notDrawnBalls() {
         return List.copyOf(this.balls.getBalls());
     }
 
@@ -86,7 +86,7 @@ public class BingoImpl implements Bingo {
 
     private void markField(Card card, int index) {
         Field currField = card.getCard().get(index);
-        if (this.balls.getPulledBalls().contains(currField.getValue())) {
+        if (this.balls.getDrawnBalls().contains(currField.getValue())) {
             currField.setMark();
         }
     }

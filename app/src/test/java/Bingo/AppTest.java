@@ -22,15 +22,15 @@ public class AppTest {
     }
 
     @Test
-    public void testNotPulledBalls() {
+    public void testNotDrawnBalls() {
         String msg = "The size of this list should be 75!";
-        assertEquals(msg, engine.notPulledBalls().size(), 75);
+        assertEquals(msg, engine.notDrawnBalls().size(), 75);
     }
 
     @Test
-    public void testPulledBalls() {
+    public void testDrawnBalls() {
         String msg = "The size of this list should be 0!";
-        assertEquals(msg, 0, engine.pulledBalls().size());
+        assertEquals(msg, 0, engine.drawnBalls().size());
     }
 
     @Test
@@ -38,7 +38,6 @@ public class AppTest {
         String msg = "Values are wrong!";
         this.checkValues(engine.pOneCard(), msg);
     }
-
 
     @Test
     public void checkPlayerTwoCardValues() {
@@ -55,16 +54,15 @@ public class AppTest {
         }
     }
 
-
     @Test
     public void checkBallsValue() {
         String msg = "Value of some balls are out of range!";
         int currValue;
         int checkValue;
-        for (int i = 0; i < engine.notPulledBalls().size(); i++) {
-            checkValue = engine.notPulledBalls().get(i);
-            for (int j = 0; j < engine.notPulledBalls().size(); j++) {
-                currValue = engine.notPulledBalls().get(j);
+        for (int i = 0; i < engine.notDrawnBalls().size(); i++) {
+            checkValue = engine.notDrawnBalls().get(i);
+            for (int j = 0; j < engine.notDrawnBalls().size(); j++) {
+                currValue = engine.notDrawnBalls().get(j);
                 assertFalse(msg,currValue < 0 || currValue > 75 );
                 if (i != j) {
                     msg = "Value of some balls are equal!";
@@ -74,43 +72,42 @@ public class AppTest {
         }
     }
 
-
     @Test
-    public void addBallInPulledBalls() {
-        engine.pullBall();
-        String msg = "Pulled ball is not added in list of drawn balls!";
-        assertEquals(msg, 1, engine.pulledBalls().size());
+    public void addBallInDrawnBalls() {
+        engine.drawBall();
+        String msg = "Drawn ball is not added in list of drawn balls!";
+        assertEquals(msg, 1, engine.drawnBalls().size());
     }
 
     @Test
-    public void removeBallFromPulledBalls() {
-        engine.pullBall();
-        String msg = "Pulled balls is not removed from not drawn List!";
-        assertEquals(msg, 74, engine.notPulledBalls().size());
+    public void removeBallFromDrawnBalls() {
+        engine.drawBall();
+        String msg = "Drawn balls is not removed from not drawn List!";
+        assertEquals(msg, 74, engine.notDrawnBalls().size());
     }
 
     @Test
-    public void checkValueOfPulledBall() {
+    public void checkValueOfDrawnBall() {
         String msg = "The number of the current drawn ball was not pushed correctly into the list of drawn balls!";
-        int currBall = engine.pullBall();
-        int inPulledBalls = engine.pulledBalls().get(0);
-        assertEquals(msg, currBall, inPulledBalls);
+        int currBall = engine.drawBall();
+        int inDrawnBalls = engine.drawnBalls().get(0);
+        assertEquals(msg, currBall, inDrawnBalls);
     }
 
     @Test
-    public void checkValueOfNotPulledBall() {
+    public void checkValueOfNotDrawnBall() {
         String msg = "The number of the drawn ball still exist in the list of not drawn balls!";
-        int currBall = engine.pullBall();
-        assertFalse(msg, engine.notPulledBalls().contains(currBall));
+        int currBall = engine.drawBall();
+        assertFalse(msg, engine.notDrawnBalls().contains(currBall));
     }
 
     @Test
     public void drawMoreBallsThenExist() {
         String msg = "It is possible to draw more then 75 balls!";
         boolean test = true;
-        this.pullAllBalls();
+        this.drawAllBalls();
         try {
-            engine.pullBall();
+            engine.drawBall();
         } catch (AssertionError error) {
             System.out.println(error.getMessage());
             test = false;
@@ -132,7 +129,7 @@ public class AppTest {
 
     @Test
     public void checkMarkFieldPlayerOne() {
-        this.pullAllBalls();
+        this.drawAllBalls();
         engine.pOneMarkField(1);
         String msg = "It is not possible to mark a field!";
         assertTrue(msg, engine.pOneCard().get(1).isMarked());
@@ -140,7 +137,7 @@ public class AppTest {
 
     @Test
     public void checkMarkFieldPlayerTwo() {
-        this.pullAllBalls();
+        this.drawAllBalls();
         engine.pTwoMarkField(1);
         String msg = "It is not possible to mark a field!";
         assertTrue(msg, engine.pTwoCard().get(1).isMarked());
@@ -172,10 +169,9 @@ public class AppTest {
         assertFalse(msg, works);
     }
 
-
     @Test
     public void gameOverAfterWinPlayerOne() {
-        this.pullAllBalls();
+        this.drawAllBalls();
         String msg = "The game should be game over!";
         engine.pOneCard().stream().limit(5).map(Field::getIndex).forEach(index -> engine.pOneMarkField(index));
         assertTrue(msg, engine.isGameOver());
@@ -183,20 +179,19 @@ public class AppTest {
 
     @Test
     public void gameOverAfterWinPlayerTwo() {
-        this.pullAllBalls();
+        this.drawAllBalls();
         String msg = "The game should be game over!";
         engine.pTwoCard().stream().limit(5).map(Field::getIndex).forEach(index -> engine.pTwoMarkField(index));
         assertTrue(msg, engine.isGameOver());
     }
 
-
     @Test
-    public void testNewGamePulledBalls() {
+    public void testNewGameDrawnBalls() {
         String msg = "Balls did no reset!";
-        this.pullAllBalls();
-        List<Integer> oldBallList = engine.pulledBalls();
+        this.drawAllBalls();
+        List<Integer> oldBallList = engine.drawnBalls();
         engine.newGame();
-        List<Integer> newBallList = engine.pulledBalls();
+        List<Integer> newBallList = engine.drawnBalls();
         assertNotEquals(msg, oldBallList, newBallList);
     }
 
@@ -222,7 +217,7 @@ public class AppTest {
     public void winConditionsHorizontal() {
         String msg = "Horizontal winning conditions do not work!";
         for (int i = 0; i < 5; i++) {
-            this.pullAllBalls();
+            this.drawAllBalls();
             for (int j = 0; j < 5; j++) {
                 engine.pOneMarkField((j * 5) + i);
             }
@@ -235,7 +230,7 @@ public class AppTest {
     public void winConditionsVertical() {
         String msg = "Vertical winning conditions do not work!";
         for (int i = 0; i < 5; i++) {
-            this.pullAllBalls();
+            this.drawAllBalls();
             for (int j = 0; j < 5; j++) {
                 engine.pOneMarkField(j + (i * 5));
             }
@@ -250,20 +245,14 @@ public class AppTest {
         List<Integer> diaOne = List.of(0, 6, 12, 18, 24);
         List<Integer> diaTwo = List.of(4, 8, 12, 16, 20);
 
-        this.pullAllBalls();
+        this.drawAllBalls();
         diaOne.forEach(i -> engine.pOneMarkField(i));
         assertTrue(engine.isGameOver());
         engine.newGame();
-        this.pullAllBalls();
+        this.drawAllBalls();
         diaTwo.forEach(i -> engine.pOneMarkField(i));
         assertTrue(msg, engine.isGameOver());
 
-    }
-
-    private void pullAllBalls() {
-        for (int i = 0; i < 75; i++) {
-            engine.pullBall();
-        }
     }
 
     @Test
@@ -271,9 +260,16 @@ public class AppTest {
         String msg = "Card in engine is mutable!";
         engine.newGame();
         List<Field> list = engine.pOneCard();
-        this.pullAllBalls();
+        this.drawAllBalls();
         list.forEach(Field::setMark);
         engine.pOneMarkField(2);
         assertFalse(msg, engine.isGameOver());
     }
+
+    private void drawAllBalls() {
+        for (int i = 0; i < 75; i++) {
+            engine.drawBall();
+        }
+    }
+
 }

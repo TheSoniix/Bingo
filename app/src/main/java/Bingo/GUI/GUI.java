@@ -1,19 +1,19 @@
-package Bingo.Representation;
+package Bingo.GUI;
 
 import Bingo.Engine.Bingo;
 import Bingo.Engine.BingoImpl;
 import Bingo.Engine.Models.Field;
-import Bingo.Representation.Models.Text;
+import Bingo.GUI.Models.Text;
 import processing.core.PApplet;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 
-public class Representation extends PApplet {
+public class GUI extends PApplet {
 
     public static void run() {
-        PApplet.runSketch(new String[]{""}, new Representation());
+        PApplet.runSketch(new String[]{""}, new GUI());
     }
 
     // Engine of the Game
@@ -31,7 +31,7 @@ public class Representation extends PApplet {
     int currBall;
     int counterMulitplier;
 
-    // Counters for autoMark()
+    // Counters
     int animationCounter = 0;
     int markCounter = 0;
     boolean animate = false;
@@ -43,7 +43,6 @@ public class Representation extends PApplet {
     List<HashMap<String, Integer>> oFieldInfo = new ArrayList<>();
 
     public void settings() {
-        //  size(1280, 720);
         fullScreen();
     }
 
@@ -54,9 +53,7 @@ public class Representation extends PApplet {
         noStroke();
         textAlign(CENTER);
 
-        // midX - 379 = ((5 * size) + (4 * gap) / 2) -> Mitte der Karte
         pFieldInfo = this.fieldList(midX - 379, midY - 200, 150);
-        // midY + 596 = ((5 * size) + (4 * gap) / 2) -> Mitte der Karte
         oFieldInfo = this.fieldList(midX + 596, midY - 200, 100);
     }
 
@@ -73,11 +70,11 @@ public class Representation extends PApplet {
         new Text("Opponent", midX + 850, midY - 300, 32, grey, scale).draw(super.g);
 
         // Draw counter
-        String drawCounter = "Draw counter: " + engine.pulledBalls().size();
+        String drawCounter = "Draw counter: " + engine.drawnBalls().size();
         new Text(drawCounter, midX - 900, midY - 300, 28, grey, scale).draw(super.g);
 
         // Gezogenen Bälle
-        IntStream.range(0, engine.pulledBalls().size()).forEach(this::pulledBalls);
+        IntStream.range(0, engine.drawnBalls().size()).forEach(this::drawnBalls);
 
         // New GAme Button
         this.newGame();
@@ -88,10 +85,10 @@ public class Representation extends PApplet {
 
         if (!engine.isGameOver()) {
             if (animate) {
-                this.drawAnimatedBall();
+                this.paintAnimatedBall();
                 this.animateBall();
             } else {
-                this.drawNotAnimatedBall();
+                this.paintNotAnimatedBall();
             }
             if (pulled) {
                 this.autoMarkingOpponent();
@@ -104,20 +101,20 @@ public class Representation extends PApplet {
         animationCounter++;
     }
 
-    void drawNotAnimatedBall() {
+    void paintNotAnimatedBall() {
         if (overCircle(midX, midY - 400)) {
             colorGradient(midX * scale, (midY - 400) * scale, 150 * scale, false);
         } else {
             colorGradient(midX * scale, (midY - 400) * scale, 140 * scale, false);
         }
-        String tempText = (engine.pulledBalls().size() == 0) ? "Start" : Integer.toString(currBall);
+        String tempText = (engine.drawnBalls().size() == 0) ? "Start" : Integer.toString(currBall);
         fill(white);
         circle(midX * scale, (midY - 400) * scale, 100 * scale);
         new Text(tempText, midX, midY - 400, 32, grey, scale).draw(super.g);
 
     }
 
-    void drawAnimatedBall() {
+    void paintAnimatedBall() {
         String tempText = Integer.toString(currBall);
         colorGradient(midX * scale, (midY - 400) * scale, 150 * scale, true);
         fill(grey);
@@ -140,21 +137,21 @@ public class Representation extends PApplet {
 
     void animateBall() {
         if (animationCounter % 3 == 0) {
-            int tempIdx = (int) random(0, engine.notPulledBalls().size() - 1);
-            currBall = engine.notPulledBalls().get(tempIdx);
+            int tempIdx = (int) random(0, engine.notDrawnBalls().size() - 1);
+            currBall = engine.notDrawnBalls().get(tempIdx);
             if (animationCounter == 60) {
-                currBall = engine.pullBall();
+                currBall = engine.drawBall();
                 animate = false;
                 pulled = true;
             }
         }
     }
 
-    void pulledBalls(int index) {
+    void drawnBalls(int index) {
         colCounter = (index % 15 == 0) ? (index / 15) : colCounter;
         int x = ((midX - 1180) + 40 * (index % 15));
         int y = midY - 200 + 40 * colCounter;
-        String tempText = Integer.toString(engine.pulledBalls().get(index));
+        String tempText = Integer.toString(engine.drawnBalls().get(index));
         fill(white);
         circle(x * scale, y * scale, 35 * scale);
         new Text(tempText, x, y, 20, grey, scale).draw(super.g);

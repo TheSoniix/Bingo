@@ -3,12 +3,12 @@
  */
 package Bingo;
 
-import Bingo.Representation.Representation;
+import Bingo.GUI.GUI;
 
 public class App {
     public static void main(String[] args) {
 
-         Representation.run();
+         GUI.run();
 
     }
 }
